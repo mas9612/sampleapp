@@ -13,9 +13,10 @@ import (
 )
 
 var (
-	host string
-	user string
-	pass string
+	host   string
+	user   string
+	pass   string
+	dbname string
 )
 
 const (
@@ -26,6 +27,7 @@ func init() {
 	flag.StringVar(&host, "host", "127.0.0.1:3306", "DB host")
 	flag.StringVar(&user, "user", "golang", "DB user")
 	flag.StringVar(&pass, "pass", "golang", "DB pass")
+	flag.StringVar(&dbname, "dbname", "sample", "DB name")
 	flag.Parse()
 
 	var err error
@@ -48,6 +50,10 @@ func init() {
 		logger.Info("configuration overridden by environment variable 'SAMPLEAPP_DB_PASS'")
 		pass = value
 	}
+	if value, ok := os.LookupEnv("SAMPLEAPP_DB_NAME"); ok {
+		logger.Info("configuration overridden by environment variable 'SAMPLEAPP_DB_PASS'")
+		dbname = value
+	}
 }
 
 var (
@@ -64,7 +70,7 @@ func main() {
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	dataSource := fmt.Sprintf("%s:%s@tcp(%s)/sample", user, pass, host)
+	dataSource := fmt.Sprintf("%s:%s@tcp(%s)/%s", user, pass, host, dbname)
 	db, err := sql.Open("mysql", dataSource)
 	if err != nil {
 		logger.Fatal("failed to connect to mysql", zap.Error(err))

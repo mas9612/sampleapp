@@ -34,6 +34,20 @@ func init() {
 		fmt.Println("failed to create new logger")
 		os.Exit(1)
 	}
+
+	// If environment variable set, command line argument is overridden by it.
+	if value, ok := os.LookupEnv("SAMPLEAPP_DB_HOST"); ok {
+		logger.Info("configuration overridden by environment variable 'SAMPLEAPP_DB_HOST'")
+		host = value
+	}
+	if value, ok := os.LookupEnv("SAMPLEAPP_DB_USER"); ok {
+		logger.Info("configuration overridden by environment variable 'SAMPLEAPP_DB_USER'")
+		user = value
+	}
+	if value, ok := os.LookupEnv("SAMPLEAPP_DB_PASS"); ok {
+		logger.Info("configuration overridden by environment variable 'SAMPLEAPP_DB_PASS'")
+		pass = value
+	}
 }
 
 var (

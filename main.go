@@ -27,13 +27,7 @@ func init() {
 	flag.StringVar(&user, "user", "golang", "DB user")
 	flag.StringVar(&pass, "pass", "golang", "DB pass")
 	flag.Parse()
-}
 
-var (
-	logger *zap.Logger
-)
-
-func init() {
 	var err error
 	logger, err = zap.NewProduction()
 	if err != nil {
@@ -41,6 +35,10 @@ func init() {
 		os.Exit(1)
 	}
 }
+
+var (
+	logger *zap.Logger
+)
 
 func main() {
 	defer logger.Sync()

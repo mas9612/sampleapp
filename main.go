@@ -51,13 +51,23 @@ func init() {
 		pass = value
 	}
 	if value, ok := os.LookupEnv("SAMPLEAPP_DB_NAME"); ok {
-		logger.Info("configuration overridden by environment variable 'SAMPLEAPP_DB_PASS'")
+		logger.Info("configuration overridden by environment variable 'SAMPLEAPP_DB_NAME'")
 		dbname = value
 	}
 }
 
 var (
 	logger *zap.Logger
+
+	istioTracingHeaders = []string{
+		"x-request-id",
+		"x-b3-traceid",
+		"x-b3-spanid",
+		"x-b3-parentspanid",
+		"x-b3-sampled",
+		"x-b3-flags",
+		"x-ot-span-context",
+	}
 )
 
 func main() {
@@ -115,6 +125,9 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	for _, header := range istioTracingHeaders {
+		w.Header().Add(header, r.Header.Get(header))
+	}
 	w.WriteHeader(http.StatusOK)
 	for _, r := range result {
 		if n, err := io.WriteString(w, r); err != nil || n < len(r) {
